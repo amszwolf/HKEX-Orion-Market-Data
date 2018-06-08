@@ -41,7 +41,8 @@ fn set_u16_le(a: &mut [u8], v: u16) -> u16 {
 
 fn main() {
 
-    run::run();
+    // run::run();
+    run::run_thread();
     // data_structure:: tree::run();
       // tree::run();
       // ringqueue::run();

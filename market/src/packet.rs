@@ -12,6 +12,71 @@ use std::fmt;
 //     fn unpack<T>(rd_buffer: ByteBuffer) -> T;
 // }
 
+pub fn get_packet_data(body_pack: Vec<u8>){
+
+        let body_pack_clone = body_pack.clone();
+            let body_head = Head::new(body_pack_clone);
+            // println!("MsgType :{}", body_head.MsgType);
+            // println!("MsgSize :{}", body_head.MsgSize);
+
+            if (body_head.MsgType == 11) {
+                let body_data = NowPrice::new(body_pack);
+                // println!("{:?}", &body_pack_clone);
+                // println!("{}", body_data.MsgSize);
+                // println!("{}", body_data.MsgType);
+                // println!("{}", body_data.SecurityCode);
+                // println!("{}", body_data.MarketCode);
+                // break;
+                // if (body_data.MsgType == 11) {
+                // let body_pack_clone = body_pack.clone();
+                // let body_data = NowPrice::new(body_pack);
+                // // println!("{:?}", &body_pack_clone);
+                println!("{}", body_data.MsgSize);
+                println!("{}", body_data.MsgType);
+                println!("{}", body_data.SecurityCode);
+                println!("{}", body_data.MarketCode);
+
+            // }
+            } else if (body_head.MsgType == 53) {
+                println!("MsgType :{}", body_head.MsgType);
+                println!("MsgSize :{}", body_head.MsgSize);
+                
+                let filler_nums = (body_head.MsgSize - 12) / 24;
+                println!(" filler_nums {}",filler_nums );
+                let body_data = LevelPrice::new(body_pack, filler_nums as u8);
+                println!("{}", body_data);
+            } else if (body_head.MsgType == 62) {
+                println!("MsgType :{}", body_head.MsgType);
+            } else if (body_head.MsgType == 40) {
+                let body_data = NominalPrice::new(body_pack);
+                println!("else MsgType :{}", body_head.MsgType);
+                println!("{}", body_data.SecurityCode);
+                println!("{}", body_data.NominalPrice);
+            } else if (body_head.MsgType == 13) {
+                let body_data = LiquidityProvider::write_bytes(body_pack);
+                println!("else MsgType :{}", body_head.MsgType);
+                println!("MsgSize :{}", body_head.MsgSize);
+                // println!("{}",body_data. )
+                println!("{}", body_data.SecurityCode);
+                println!("{}", body_data.NoLiquidityProviders);
+                println!("{}", body_data.LPBrokerNumber);
+            } else if (body_head.MsgType == 71) {
+                let body_data = IndexData::write_bytes(body_pack);
+                println!("else MsgType :{}", body_head.MsgType);
+                println!("IndexCode :{}", body_data.IndexCode);
+                println!("IndexValue :{}", body_data.IndexValue);
+            } else if (body_head.MsgType == 54) {
+                let body_data = BrokerQueue::write_bytes(body_pack);
+                println!("else MsgType :{}", body_head.MsgType);
+                println!("{}", body_data.SecurityCode);
+                println!("{}", body_data.ItemCount);
+                println!("{}", body_data.Side);
+            } else {
+                println!("error MsgType :{}", body_head.MsgType);
+            }
+}
+
+
 pub fn write_bytes<T>(head: Vec<u8>) -> ByteBuffer {
     let mut buffer = ByteBuffer::new();
     // buffer.endian = LittleEndian;
