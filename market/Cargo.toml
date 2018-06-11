@@ -13,3 +13,5 @@ redis = "*"
 byteorder = "0.3"
 bytebuffer = {git="https://github.com/wangyu190810/rust-bytebuffer",branch = "master"}
 toml = "0.4.5"
+log = "0.4"
+env_logger = "*"

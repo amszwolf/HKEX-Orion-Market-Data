@@ -5,7 +5,6 @@ use bytebuffer::ByteBuffer;
 // use packet::{save_data, AddOddLotOrder, Head, IndexDefinition, NominalPrice, NowPrice, PackHead, LevelPrice};
 use packet::*;
 
-
 // if buf_data == 0:
 //     self.create()
 //     buf = b''
@@ -16,7 +15,7 @@ use packet::*;
 //     if len(buf) < 16 : break
 //     header = get_packet_header(buf[:16])
 //     if len(buf) < header['PktSize']: break
-//     if header['MsgCount'] == 0: 
+//     if header['MsgCount'] == 0:
 //         buf = buf[header['PktSize']:]; break
 //     data = get_packet_data(buf[:header['PktSize']])
 //     if data :
@@ -26,7 +25,6 @@ use packet::*;
 //         self.handle(data)
 //     buf = buf[header['PktSize']:]
 
-
 pub fn head(addr: String) {
     static buff_status: usize = 4096;
 
@@ -35,7 +33,7 @@ pub fn head(addr: String) {
     let mut pkt_size = 0;
     let mut msg_count = 0;
     let mut buff = [0; 4096];
-    let mut pack_end_flag:bool = true;
+    let mut pack_end_flag: bool = true;
     let mut pack;
     let mut i = 1;
     loop {
@@ -44,51 +42,65 @@ pub fn head(addr: String) {
         let data = buff.clone();
         // println!("{:?}",data );
         body.extend(data.to_vec());
-        println!("recv data {}", i=i+1 );
+        println!("recv data {}", i = i + 1);
         // continue;
-        if i == 10{
-            break
+        if i == 10 {
+            break;
         }
-        loop{
-
+        loop {
             println!(" body.len() {}", body.len());
-            if body.len() <= 16{
-                break
+            if body.len() <= 16 {
+                break;
             }
             pack = PackHead::write_bytes(body.clone());
-            
+
             pkt_size = pack.PktSize;
             msg_count = pack.MsgCount;
             println!("size {}", pkt_size);
-            println!("msg_count {}", msg_count );
-            println!("SeqNum {}",pack.SeqNum );
-            println!(" time {}", pack.SendTime );
-            if msg_count == 0{
+            println!("msg_count {}", msg_count);
+            println!("SeqNum {}", pack.SeqNum);
+            println!(" time {}", pack.SendTime);
+            if msg_count == 0 {
                 body = body.split_off(pkt_size as usize);
-                
+
                 break;
             }
-            if pkt_size == 0{
-                println!("recv new pack body.len {} pkt_size {} " ,body.len(),  pkt_size);
+            if pkt_size == 0 {
+                println!(
+                    "recv new pack body.len {} pkt_size {} ",
+                    body.len(),
+                    pkt_size
+                );
                 break;
             }
-            if body.len() < pkt_size as usize{
-                
-                println!("recv new pack body.len {} pkt_size {} " ,body.len(),  pkt_size);
-                break
+            if body.len() < pkt_size as usize {
+                println!(
+                    "recv new pack body.len {} pkt_size {} ",
+                    body.len(),
+                    pkt_size
+                );
+                break;
             }
-            
+
             // let mut body_clone = body.clone();
             // let mut body_pack = body.split_off(16);
             // let mut body_pack = body;
             // body_pack.body,(pkt_size as usize);
             let mut body_pack = body.clone();
             body_pack = body_pack.split_off(16);
-            get_packet_data(body_pack);
+            let end = get_packet_data(body_pack);
+            if end == -1 {
+                break;
+            }
+
             //  let mut body_pack = body.clone();
             body.split_off(pkt_size as usize);
-            println!("recv new pack body.len {} pkt_size {} " ,body.len(),  pkt_size);
-            if body.len() == 304{
+            println!(
+                "recv new pack body.len {} pkt_size {} ",
+                body.len(),
+                pkt_size
+            );
+            if body.len() == 304 {
                 break;
             }
             // let mut body_pack = body.clone();
@@ -96,10 +108,9 @@ pub fn head(addr: String) {
             // get_packet_data(body_pack);
             // body = body.split_off(pkt_size as usize);
             // body = body_pack_end;
-
-            }
-            break;
-       }
+        }
+        break;
+    }
 }
 
 // }
@@ -118,7 +129,7 @@ pub fn head(addr: String) {
 //             if (body_head.MsgType == 53) {
 //                 println!("MsgType :{}", body_head.MsgType);
 //                 println!("MsgSize :{}", body_head.MsgSize);
-                
+
 //                 let filler_nums = (pkt_size - 12) / 24;
 //                 println!(" filler_nums {}",filler_nums );
 //                 let body_data = LevelPrice::new(body_pack, filler_nums as u8);
@@ -137,7 +148,6 @@ pub fn head(addr: String) {
 
 //     }
 // }
-    
 
 pub fn head_bak(addr: String) {
     static buff_status: usize = 4096;
@@ -149,7 +159,7 @@ pub fn head_bak(addr: String) {
     let mut body = Vec::new();
     let mut pkt_size = 0;
     let mut buff = [0; 4096];
-    let mut pack_end_flag:bool = true;
+    let mut pack_end_flag: bool = true;
     let mut pack;
     loop {
         let _ = stream.read(&mut buff); // ignore here too
@@ -165,14 +175,14 @@ pub fn head_bak(addr: String) {
 
         if (body.is_empty() || pack_end_flag) {
             pkt_size = pack.PktSize
-        }else if (!pack_end_flag || body.len() >= 16) {
+        } else if (!pack_end_flag || body.len() >= 16) {
             pack = PackHead::write_bytes(body.clone());
             pkt_size = pack.PktSize;
         }
         // if (body.len() < (pack.PktSize as usize)) {
         body.extend(data.to_vec());
         buff = [0; 4096];
-        
+
         if (body.len() >= pkt_size as usize) {
             let body_clone = body.clone();
             let body_pack = body.split_off(16);
@@ -202,12 +212,12 @@ pub fn head_bak(addr: String) {
             } else if (body_head.MsgType == 53) {
                 println!("MsgType :{}", body_head.MsgType);
                 println!("MsgSize :{}", body_head.MsgSize);
-                
+
                 let filler_nums = (pkt_size - 12) / 24;
-                println!(" filler_nums {}",filler_nums );
+                println!(" filler_nums {}", filler_nums);
                 let body_data = LevelPrice::new(body_pack, filler_nums as u8);
                 println!("{}", body_data);
-            } else if (body_head.MsgType == 62) {
+            } else if body_head.MsgType == 62 {
                 println!("MsgType :{}", body_head.MsgType);
             } else if (body_head.MsgType == 40) {
                 let body_data = NominalPrice::new(body_pack);
@@ -237,10 +247,10 @@ pub fn head_bak(addr: String) {
                 println!("error MsgType :{}", body_head.MsgType);
             }
 
-           let( _, body ) = body.split_at(pkt_size as usize);
-           if (body.len()) > 0{
-               pack_end_flag = false;
-           }
+            let (_, body) = body.split_at(pkt_size as usize);
+            if (body.len()) > 0 {
+                pack_end_flag = false;
+            }
         }
     }
 }
@@ -291,5 +301,5 @@ pub fn head_bak(addr: String) {
 
 //         // println!("{:?}",buff);
 //     }
-// } 
+// }
 // the stream is closed here

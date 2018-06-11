@@ -6,13 +6,15 @@ use std::io::{Read, Write};
 use time;
 // 包头数据
 use std::fmt;
+use model::Price;
+use log;
 
 // trait HasArea  {
 //     fn write_bytes<T>(head: Vec<u8>) -> T;
 //     fn unpack<T>(rd_buffer: ByteBuffer) -> T;
 // }
 
-pub fn get_packet_data(body_pack: Vec<u8>){
+pub fn get_packet_data(body_pack: Vec<u8>) -> i8{
 
         let body_pack_clone = body_pack.clone();
             let body_head = Head::new(body_pack_clone);
@@ -45,6 +47,7 @@ pub fn get_packet_data(body_pack: Vec<u8>){
                 println!(" filler_nums {}",filler_nums );
                 let body_data = LevelPrice::new(body_pack, filler_nums as u8);
                 println!("{}", body_data);
+                info!("log info {}",body_data);
             } else if (body_head.MsgType == 62) {
                 println!("MsgType :{}", body_head.MsgType);
             } else if (body_head.MsgType == 40) {
@@ -52,6 +55,8 @@ pub fn get_packet_data(body_pack: Vec<u8>){
                 println!("else MsgType :{}", body_head.MsgType);
                 println!("{}", body_data.SecurityCode);
                 println!("{}", body_data.NominalPrice);
+                println!("json data {:?}", Price::new(body_data).to_json() );
+                return -1;
             } else if (body_head.MsgType == 13) {
                 let body_data = LiquidityProvider::write_bytes(body_pack);
                 println!("else MsgType :{}", body_head.MsgType);
@@ -62,6 +67,7 @@ pub fn get_packet_data(body_pack: Vec<u8>){
                 println!("{}", body_data.LPBrokerNumber);
             } else if (body_head.MsgType == 71) {
                 let body_data = IndexData::write_bytes(body_pack);
+                 info!("log info {}",body_data.IndexCode);
                 println!("else MsgType :{}", body_head.MsgType);
                 println!("IndexCode :{}", body_data.IndexCode);
                 println!("IndexValue :{}", body_data.IndexValue);
@@ -74,6 +80,7 @@ pub fn get_packet_data(body_pack: Vec<u8>){
             } else {
                 println!("error MsgType :{}", body_head.MsgType);
             }
+        return 1
 }
 
 
