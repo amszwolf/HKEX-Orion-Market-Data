@@ -2,6 +2,7 @@
 use redis_client;
 use redis_client::commands::CommandSender;
 use redis_client::errors::RedisError;
+use redis::Commands;
 use redis;
 
 pub fn set_and_get() -> Result<String, RedisError> {
@@ -26,3 +27,14 @@ pub fn do_something() -> redis::RedisResult<()> {
 
     Ok(())
 }
+
+pub fn redis_conn(addr:&str) -> redis::Connection{
+    // let client = try!(redis::Client::open("redis://192.168.1.11"));
+    // let client = try!(redis::Client::open(addr));
+    // let con = try!(client.get_connection());
+
+    let client = redis::Client::open(addr).unwrap();
+    let con = client.get_connection().unwrap();
+    return con;
+}
+

@@ -8,8 +8,8 @@ use serde_json;
 pub struct Price {
     marketCode: String,
     lastPrice: f32,
-    timestamp: u32,
-    symbol: String,
+    timestamp: u64,
+    pub symbol: String,
     stop: u8,
     openPrice: f32,
     volume: u32,
@@ -19,9 +19,9 @@ pub struct Price {
     name: String,
     lowPrice: f32,
     highPrice: f32,
-    eps: f32,
-    amount: u64,
-    issueCap: u64,
+    eps: String,
+    amount: f64,
+    issueCap: String,
     lotSize: u32,
     time: String,
     instrumentType: String,
@@ -41,12 +41,18 @@ impl Price {
         return price
     }
 
+    pub fn to_obj(value: &str) ->Result<Price, Error>{
+        let p: Price = serde_json::from_str(value)?;
+        Ok(p)
+    }
+
     pub fn to_json(self) -> Result<String, Error>{
         let j = serde_json::to_string(&self)?;
         Ok(j)
     }
 
-    fn other() -> Self {
+
+    pub fn other() -> Self {
         Price {
             marketCode: String::from("MAIN"),
             lastPrice: 429.2,
@@ -61,15 +67,17 @@ impl Price {
             name: String::new(),
             lowPrice: 0.0,
             highPrice: 0.0,
-            eps: 0.0,
-            amount: 0,
-            issueCap: 0,
+            eps: String::new(),
+            amount: 0.0,
+            issueCap: String::new(),
             lotSize: 0,
             time: String::from("13: 45: 05.969"),
             instrumentType: String::from("EQTY"),
         }
     }
 }
+
+
 
 // "{
 //     \"marketCode\": \"MAIN\",

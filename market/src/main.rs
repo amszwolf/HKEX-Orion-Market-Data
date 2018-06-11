@@ -33,6 +33,7 @@ mod run;
 mod stream_data;
 mod test_some;
 mod tree;
+mod init_template;
 
 use log::Level;
 
@@ -61,8 +62,9 @@ pub fn init_log(){
 
 fn main() {
     // run::run();
-    init_log();
-    run::run_thread();
+    // init_log();
+    // run::run_thread();
+    init_template::test_init_template();
     // data_structure:: tree::run();
     // tree::run();
     // ringqueue::run();
